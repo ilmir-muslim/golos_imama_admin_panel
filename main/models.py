@@ -1,8 +1,11 @@
 from django.db import models
+from storages.backends.s3boto3 import S3Boto3Storage
 
 
-class Сhapter(models.Model):
-    name = models.CharField(max_length=100, unique=True, verbose_name="Название раздела")
+class Chapter(models.Model):
+    name = models.CharField(
+        max_length=100, unique=True, verbose_name="Название раздела"
+    )
     slug = models.SlugField(
         max_length=200, unique=True, blank=True, null=True, verbose_name="URL"
     )
@@ -15,12 +18,17 @@ class Сhapter(models.Model):
     def __str__(self):
         return self.name
 
+
 class Themes(models.Model):
-    name = models.CharField(max_length=200, unique=True, verbose_name="Название темы урока")
+    name = models.CharField(
+        max_length=200, unique=True, verbose_name="Название темы урока"
+    )
     slug = models.SlugField(
         max_length=200, unique=True, blank=True, null=True, verbose_name="URL"
     )
-    chapter = models.ForeignKey(to=Сhapter, on_delete=models.CASCADE, verbose_name="Раздел")
+    chapter = models.ForeignKey(
+        to=Chapter, on_delete=models.CASCADE, verbose_name="Раздел"
+    )
 
     class Meta:
         db_table = "theme"
@@ -30,16 +38,40 @@ class Themes(models.Model):
     def __str__(self):
         return self.name
 
+
+# Специальные хранилища для разделения файлов по папкам
+class AudioStorage(S3Boto3Storage):
+    location = "audio_lesson"  # Папка для аудиофайлов
+
+
+class TextStorage(S3Boto3Storage):
+    location = "text_lesson"  # Папка для текстов
+
+
 class Lesson(models.Model):
     name = models.CharField(max_length=200, unique=True, verbose_name="Название урока")
     slug = models.SlugField(
-        max_length=200, unique=True, blank=True, null=True, verbose_name="URL"  
+        max_length=200, unique=True, blank=True, null=True, verbose_name="URL"
     )
     annotation = models.TextField(blank=True, null=True, verbose_name="Описание урока")
-    video_lesson = models.URLField(max_length=200, blank=True, null=True, verbose_name="Видео урока")
-    audio_lesson = models.FileField(upload_to="audio_lesson", blank=True, null=True, verbose_name="Аудиозапись урока")
-    text_lesson = models.FileField(upload_to="text_lesson", blank=True, null=True, verbose_name="Текст урока")
-    theme = models.ForeignKey(to=Themes, on_delete=models.CASCADE, verbose_name="Тема")
+    video_lesson = models.URLField(
+        max_length=200, blank=True, null=True, verbose_name="Видео урока"
+    )
+    audio_lesson = models.FileField(
+        storage=AudioStorage(),  # Используем кастомное хранилище
+        blank=True,
+        null=True,
+        verbose_name="Аудиозапись урока",
+    )
+    text_lesson = models.FileField(
+        storage=TextStorage(),  # Используем кастомное хранилище
+        blank=True,
+        null=True,
+        verbose_name="Текст урока",
+    )
+    theme = models.ForeignKey(
+        to="Themes", on_delete=models.CASCADE, verbose_name="Тема"
+    )
 
     class Meta:
         db_table = "lesson"
@@ -48,15 +80,23 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.name
-    
-class Telegram_file_id(models.Model):
-    name = models.ForeignKey(to=Lesson, on_delete=models.CASCADE, verbose_name="Название урока")
-    audiofile_id = models.CharField(max_length=200, blank=True, null=True, verbose_name="Id аудиофайла в ТГ")
-    text_file_id = models.CharField(max_length=200, blank=True, null=True, verbose_name="Id текстового файла в ТГ")
+
+
+class TelegramFileId(models.Model):
+    name = models.ForeignKey(
+        to=Lesson, on_delete=models.CASCADE, verbose_name="Название урока"
+    )
+    audiofile_id = models.CharField(
+        max_length=200, blank=True, null=True, verbose_name="Id аудиофайла в ТГ"
+    )
+    text_file_id = models.CharField(
+        max_length=200, blank=True, null=True, verbose_name="Id текстового файла в ТГ"
+    )
 
     class Meta:
         db_table = "telegram_file_id"
         verbose_name = "ИД файлов в телеграмме"
+        verbose_name_plural = "ИД файлов в телеграмме"
 
     def __str__(self):
-        return self.name
+        return self.name.name

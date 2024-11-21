@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from main.models import Themes, Lesson, Сhapter
+from main.models import TelegramFileId, Themes, Lesson, Chapter
 
 
-@admin.register(Сhapter)
-class СhapterAdmin(admin.ModelAdmin):
+@admin.register(Chapter)
+class ChapterAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
 
 
@@ -17,11 +17,7 @@ class ThemesAdmin(admin.ModelAdmin):
 class LessonAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
 
-    # Функция сгенерирована ИИ и вызывает сомнения, нужно перепроверить
-    # def save_model(self, request, obj):
-    #     file = request.FILES['audiofile_id']
-    #     bot = Bot(token='YOUR_TELEGRAM_TOKEN')
-    #     bot.send_document(chat_id='YOUR_CHAT_ID', document=file)
-    #     file_id = bot.get_file(file_id=bot.get_file_id(file)).file_id
-    #     obj.audiofile_id = file_id
-    #     obj.save()
+
+@admin.register(TelegramFileId)
+class TGidsAdmin(admin.ModelAdmin):
+    pass

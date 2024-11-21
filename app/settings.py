@@ -9,9 +9,10 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
+from dotenv import find_dotenv, load_dotenv
 from pathlib import Path
-
+load_dotenv(find_dotenv())
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,8 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ljd0-vav^=@^oit0x^w$c$+kcb1lnui67s280vo5+r&25wlr$5'
-
+SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -126,4 +126,14 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+AWS_ACCESS_KEY_ID = os.getenv('B2_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = os.getenv('B2_SECRET_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('B2_BUCKET_NAME')
+AWS_S3_ENDPOINT_URL = os.getenv('ENDPOINT_URL')
+AWS_QUERYSTRING_AUTH = True  
+AWS_S3_ADDRESSING_STYLE = "path"
+
+AWS_LOCATION_AUDIO = "audio_lesson"
+AWS_LOCATION_TEXT = "text_lesson"

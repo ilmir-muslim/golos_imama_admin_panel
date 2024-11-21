@@ -1,2 +1,8 @@
 .vscode/
 __pycache__/
+.env
+.venv
+text_lesson/
+audio_lesson/
+test.py
+bucket.txt
