@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from main.models import TelegramFileId, Themes, Lesson, Chapter
+from main.models import Themes, Lesson, Chapter
 
 
 @admin.register(Chapter)
@@ -16,8 +16,3 @@ class ThemesAdmin(admin.ModelAdmin):
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
-
-
-@admin.register(TelegramFileId)
-class TGidsAdmin(admin.ModelAdmin):
-    pass

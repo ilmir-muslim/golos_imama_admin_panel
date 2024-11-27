@@ -38,14 +38,10 @@ class Themes(models.Model):
     def __str__(self):
         return self.name
 
-
 # Специальные хранилища для разделения файлов по папкам
 class AudioStorage(S3Boto3Storage):
     location = "audio_lesson"  # Папка для аудиофайлов
 
-
-class TextStorage(S3Boto3Storage):
-    location = "text_lesson"  # Папка для текстов
 
 
 class Lesson(models.Model):
@@ -58,16 +54,13 @@ class Lesson(models.Model):
         max_length=200, blank=True, null=True, verbose_name="Видео урока"
     )
     audio_lesson = models.FileField(
-        storage=AudioStorage(),  # Используем кастомное хранилище
+        storage=AudioStorage(),
         blank=True,
         null=True,
         verbose_name="Аудиозапись урока",
     )
-    text_lesson = models.FileField(
-        storage=TextStorage(),  # Используем кастомное хранилище
-        blank=True,
-        null=True,
-        verbose_name="Текст урока",
+    audiofile_id = models.CharField(
+        max_length=200, blank=True, null=True, verbose_name="Id аудиофайла в ТГ"
     )
     theme = models.ForeignKey(
         to="Themes", on_delete=models.CASCADE, verbose_name="Тема"
@@ -81,22 +74,4 @@ class Lesson(models.Model):
     def __str__(self):
         return self.name
 
-
-class TelegramFileId(models.Model):
-    name = models.ForeignKey(
-        to=Lesson, on_delete=models.CASCADE, verbose_name="Название урока"
-    )
-    audiofile_id = models.CharField(
-        max_length=200, blank=True, null=True, verbose_name="Id аудиофайла в ТГ"
-    )
-    text_file_id = models.CharField(
-        max_length=200, blank=True, null=True, verbose_name="Id текстового файла в ТГ"
-    )
-
-    class Meta:
-        db_table = "telegram_file_id"
-        verbose_name = "ИД файлов в телеграмме"
-        verbose_name_plural = "ИД файлов в телеграмме"
-
-    def __str__(self):
-        return self.name.name
+    
